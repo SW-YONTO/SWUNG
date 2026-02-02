@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+  <title>SWUNG - Voice Scheduler</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Modular CSS -->
+  <link rel="stylesheet" href="/css/variables.css">
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/chat.css">
+  <link rel="stylesheet" href="/css/event-card.css">
+  <link rel="stylesheet" href="/css/event-modal.css">
+  <link rel="stylesheet" href="/css/settings.css">
+</head>
+<body>
+  
+  <div class="chat-wrapper">
+    <!-- Top Floating Header (Pill Shape) -->
+    <div class="floating-header">
+      <div class="header-pill">
+        <a href="/calendar?view=list" class="icon-btn" aria-label="Calendar">
+          <i class="ph ph-calendar-blank"></i>
+        </a>
+        <a href="/todos" class="icon-btn" aria-label="Todos">
+          <i class="ph ph-check-square"></i>
+        </a>
+      </div>
+    <div class="header-status">
+        <a href="/settings" class="user-icon-btn" aria-label="Settings">
+          <i class="ph ph-user"></i>
+        </a>
+      </div>
+    </div>
+
+
+    <!-- Chat Area -->
+    <div id="chat-container" class="chat-container">
+      <div class="message bot">
+        <div class="message-content">
+          <p>Hello! I'm SWUNG.</p>
+        </div>
+      </div>
+      <!-- Event cards are rendered here via JS -->
+    </div>
+
+    <!-- Bottom Input Area -->
+    <div class="input-area">
+      <!-- Left Actions -->
+      <div class="input-actions-left">
+        <div id="default-left-actions" class="left-action-group">
+          <button id="camera-btn" class="action-btn">
+            <i class="ph ph-camera"></i>
+          </button>
+          <button id="image-btn" class="action-btn">
+            <i class="ph ph-image"></i>
+          </button>
+        </div>
+        <button id="record-delete-btn" class="action-btn delete-btn hidden">
+          <i class="ph ph-trash"></i>
+        </button>
+      </div>
+
+      <!-- Hidden File Inputs -->
+      <input type="file" id="file-input-camera" accept="image/*" capture="environment" class="hidden">
+      <input type="file" id="file-input-gallery" accept="image/*" multiple class="hidden">
+
+      <!-- Image Preview Container -->
+      <div id="image-preview-container" class="image-preview-container hidden"></div>
+
+      <!-- Text Input -->
+      <div class="input-wrapper">
+        <input type="text" id="chat-input" placeholder="Message Toki" autocomplete="off">
+        
+        <!-- Voice Visualizer (Hidden) -->
+        <div id="voice-visualizer" class="voice-visualizer hidden">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        
+        <!-- Processing State (Hidden) -->
+        <div id="processing-state" class="processing-state hidden">
+          <i class="ph ph-spinner ph-spin"></i>
+          <span>Processing...</span>
+        </div>
+      </div>
+      
+      <!-- Right Action (Mic/Send) -->
+      <div class="input-actions-right">
+        <button id="mic-btn" class="mic-btn">
+          <i class="ph ph-microphone "></i>
+        </button>
+        <!-- Send button hidden by default, shown when typing -->
+        <button id="send-btn" class="send-btn hidden">
+        <i class="ph ph-paper-plane-tilt"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="settings-content">
+        <button id="close-settings-btn" class="close-settings-top"><i class="ph ph-x"></i></button>
+        
+        <!-- User Profile Card -->
+        <div class="profile-card">
+          <div class="profile-avatar-large">
+             <% if (typeof user !== 'undefined' && user && user.avatar) { %>
+              <img src="<%= user.avatar %>" alt="User">
+             <% } else { %>
+               <i class="ph ph-user"></i>
+             <% } %>
+          </div>
+          <div class="profile-info">
+            <h2 class="profile-name">
+              <%= (typeof user !== 'undefined' && user) ? user.name : 'Guest User' %> 
+              <i class="ph ph-pencil-simple edit-icon"></i>
+            </h2>
+            <p class="profile-email"><%= (typeof user !== 'undefined' && user) ? user.email : 'Sign in to sync' %></p>
+          </div>
+        </div>
+
+        <!-- Quick Actions Grid -->
+        <div class="settings-grid">
+          <button class="settings-grid-item">
+            <div class="grid-icon"><i class="ph ph-users"></i></div>
+            <span>Contacts</span>
+          </button>
+          <button class="settings-grid-item highlighted">
+            <div class="grid-icon"><i class="ph ph-sparkle"></i></div>
+            <span>Smart Insights</span>
+            <div class="plus-badge">+</div>
+          </button>
+        </div>
+
+        <!-- Plan Card -->
+        <div class="plan-card">
+          <div class="plan-info">
+            <h3>Free Plan</h3>
+            <p>Events Scheduled: <strong><%= typeof todayEvents !== 'undefined' ? todayEvents.length : 0 %> / 14</strong></p>
+          </div>
+          <button class="upgrade-btn">Upgrade</button>
+        </div>
+
+        <!-- Menu List -->
+        <div class="settings-list">
+          <a href="/calendar" class="settings-item">
+            <div class="item-icon"><i class="ph ph-calendar-check"></i></div>
+            <span class="item-text">Calendars</span>
+            <span class="item-sub"><%= (typeof user !== 'undefined' && user) ? user.email : '' %></span>
+            <i class="ph ph-caret-right item-arrow"></i>
+          </a>
+          
+          <button class="settings-item">
+            <div class="item-icon"><i class="ph ph-bell"></i></div>
+            <span class="item-text">Event Notification</span>
+            <i class="ph ph-caret-right item-arrow"></i>
+          </button>
+          
+          <button class="settings-item">
+            <div class="item-icon"><i class="ph ph-magic-wand"></i></div>
+            <span class="item-text">Special Features</span>
+            <i class="ph ph-caret-right item-arrow"></i>
+          </button>
+          
+          <button class="settings-item">
+            <div class="item-icon"><i class="ph ph-user-circle"></i></div>
+            <span class="item-text">My Account</span>
+            <i class="ph ph-caret-right item-arrow"></i>
+          </button>
+
+          <a href="/logout" class="settings-item logout-item">
+            <div class="item-icon"><i class="ph ph-sign-out"></i></div>
+            <span class="item-text">Log Out</span>
+          </a>
+        </div>
+        
+        <!-- Bottom Actions -->
+        <div class="settings-footer">
+           <button class="footer-icon-btn"><i class="ph ph-moon"></i></button>
+           <button class="footer-icon-btn"><i class="ph ph-translate"></i></button>
+           <button class="footer-icon-btn"><i class="ph ph-dots-three"></i></button>
+        </div>
+
+    </div>
+    
+    <!-- Event Modal Partial -->
+    <%- include('partials/event-modal') %>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/socket.js"></script>
+  <script src="/js/event-modal.js"></script>
+  <script src="/js/chat.js"></script>
+</body>
+</html>

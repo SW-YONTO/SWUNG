@@ -1,0 +1,311 @@
+/* settings.css - Toki Glass Settings Style */
+
+/* Settings Modal Container */
+#settings-modal .settings-content {
+  background: #121212; /* Fallback */
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+  /* Glass effect for the modal background */
+  background: radial-gradient(circle at 50% -20%, #2e2e3e 0%, #050505 50%);
+}
+
+@media (min-width: 768px) {
+  #settings-modal .settings-content {
+    max-width: 480px;
+    height: 90vh; /* Floating card on desktop */
+    border-radius: 32px;
+    margin: auto;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+}
+
+/* Close Button */
+.settings-content .close-settings-top {
+  align-self: flex-end;
+  width: 44px; /* Larger touch target */
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 20px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background 0.2s;
+}
+
+.settings-content .close-settings-top:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Profile Section */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-avatar-large {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: 4px solid rgba(255,255,255,0.08); /* thicker border */
+  overflow: hidden;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-large i {
+  font-size: 48px;
+  color: rgba(255,255,255,0.5);
+}
+
+.profile-name {
+  font-size: 26px; /* Larger font */
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.edit-icon {
+  font-size: 18px;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  padding: 4px; /* Hit area */
+}
+
+.profile-email {
+  font-size: 15px;
+  color: rgba(255,255,255,0.5);
+}
+
+/* Grid Actions */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.settings-grid-item {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px); /* Glass */
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 120px;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.2s, background 0.2s;
+  cursor: pointer;
+}
+
+.settings-grid-item:active {
+  transform: scale(0.98);
+}
+
+.settings-grid-item.highlighted {
+  /* Colorful glass gradient for "Smart Insights" */
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.25));
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.grid-icon {
+  font-size: 28px; /* Larger Icon */
+  color: #fff;
+}
+
+.settings-grid-item span {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+.plus-badge {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 20px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 300;
+}
+
+/* Plan Card */
+.plan-card {
+  background: linear-gradient(100deg, #1e1e24 0%, #131318 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.plan-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.plan-info p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+}
+
+.plan-info strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.upgrade-btn {
+  background: linear-gradient(90deg, #ff4757, #ff6b81);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  transition: transform 0.2s;
+}
+
+.upgrade-btn:active {
+  transform: scale(0.95);
+}
+
+/* Settings List */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: auto; /* Push footer down */
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: transparent;
+  color: inherit;
+  width: 100%;
+  text-align: left;
+  border-radius: 20px;
+  transition: background 0.2s;
+  cursor: pointer;
+  text-decoration: none; /* remove link underline */
+  border: 1px solid transparent;
+}
+
+.settings-item:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.02);
+}
+
+.item-icon {
+  width: 48px; /* Larger icon container */
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px; /* Larger icon */
+  color: #fff;
+}
+
+.item-text {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.item-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  margin-right: 8px;
+}
+
+.item-arrow {
+  color: rgba(255,255,255,0.3);
+  font-size: 18px;
+}
+
+/* Logout specific */
+.logout-item {
+  margin-top: 16px;
+}
+
+.logout-item .item-icon {
+  background: rgba(239, 68, 68, 0.15); /* Red tint */
+  color: #ef4444;
+}
+
+.logout-item .item-text {
+  color: #ef4444;
+}
+
+/* Footer */
+.settings-footer {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.footer-icon-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.7);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.footer-icon-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  transform: translateY(-2px);
+}

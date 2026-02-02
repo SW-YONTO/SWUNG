@@ -1,0 +1,204 @@
+/* ===========================================
+   Event Card Styles - SWUNG
+   Theme-aware using CSS variables
+   =========================================== */
+
+.event-card {
+  margin: 12px 0;
+  animation: slideUp 0.3s ease-out;
+}
+
+.event-card-inline {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.event-card-inline:hover {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-md);
+  background: var(--card-hover);
+}
+
+.event-card-left {
+  display: flex;
+  align-items: flex-start;
+}
+
+.event-emoji {
+  font-size: 28px;
+  background: rgba(100, 100, 255, 0.2);
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.event-card-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-title-row .event-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.event-datetime-row {
+  display: flex;
+  gap: 16px;
+}
+
+.event-day { color: var(--text-primary); font-size: 14px; }
+.event-time { color: var(--accent-blue); font-size: 14px; }
+
+.event-options-row {
+  display: flex;
+  gap: 12px;
+}
+
+.event-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.option-icon { font-size: 14px; }
+.option-label { color: var(--text-secondary); }
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  display: inline-block;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--glass-surface);
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--accent-green);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+  background: #fff;
+}
+
+.event-reminder-row, .event-desc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.reminder-icon { color: var(--accent-yellow); }
+.desc-icon { color: var(--accent-purple); }
+
+.event-card-right {
+  display: flex;
+  align-items: flex-start;
+}
+
+.edit-event-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: background 0.2s, color 0.2s;
+}
+
+.edit-event-btn:hover {
+  background: var(--glass-surface);
+  color: var(--text-primary);
+}
+
+/* Event List */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--glass-surface);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.event-list-item:hover {
+  background: var(--glass-highlight);
+}
+
+.event-emoji-small {
+  font-size: 20px;
+  background: rgba(100, 100, 255, 0.2);
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.event-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-info .event-title {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.event-info .event-time {
+  color: var(--accent-blue);
+  font-size: 14px;
+}
+
+.delete-card {
+  background: var(--btn-danger-bg);
+  border-color: var(--btn-danger-border);
+}
+
+.no-events {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px;
+}

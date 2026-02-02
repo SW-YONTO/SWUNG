@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <script src="/js/theme.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    .settings-page {
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 100px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 24px;
+    }
+    
+    .back-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    
+    .back-btn:hover {
+      background: var(--glass-highlight);
+    }
+    
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .header-spacer {
+      width: 44px;
+    }
+    
+    /* Profile Card */
+    .profile-card {
+      background: var(--glass-surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(74, 222, 128, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      border: 3px solid var(--glass-border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .profile-avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(74, 222, 128, 0.2);
+    }
+    
+    .profile-info {
+      flex: 1;
+    }
+    
+    .profile-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .profile-email {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .edit-profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--btn-primary-bg);
+      border: 1px solid var(--btn-primary-border);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: var(--accent-green);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    .edit-profile-btn:hover {
+      background: var(--glass-highlight);
+    }
+    
+    /* Section */
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin: 28px 0 14px;
+      padding-left: 4px;
+      font-weight: 600;
+    }
+    
+    .settings-group {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    
+    .settings-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--card-border);
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+    
+    .settings-item:hover {
+      background: var(--card-hover);
+    }
+    
+    .item-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    
+    .item-icon.purple { background: rgba(167, 139, 250, 0.15); color: var(--accent-purple); }
+    .item-icon.blue { background: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+    .item-icon.green { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+    .item-icon.orange { background: rgba(251, 146, 60, 0.15); color: var(--accent-orange); }
+    .item-icon.red { background: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+    .item-icon.pink { background: rgba(244, 114, 182, 0.15); color: var(--accent-pink); }
+    .item-icon.yellow { background: rgba(250, 204, 21, 0.15); color: var(--accent-yellow); }
+    .item-icon.cyan { background: rgba(34, 211, 238, 0.15); color: var(--accent-cyan); }
+    
+    .item-content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .item-label {
+      font-size: 15px;
+      font-weight: 500;
+    }
+    
+    .item-sublabel {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    .item-arrow {
+      color: var(--text-muted);
+      font-size: 18px;
+      margin-left: 8px;
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 52px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 30px;
+      transition: 0.3s;
+    }
+    
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      transition: 0.3s;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    input:checked + .toggle-slider {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+    
+    input:checked + .toggle-slider::before {
+      transform: translateX(22px);
+      background: #fff;
+    }
+    
+    /* Danger Button */
+    .danger-btn {
+      width: 100%;
+      background: var(--btn-danger-bg);
+      border: 1px solid var(--btn-danger-border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 20px;
+      color: var(--accent-red);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    .danger-btn:hover {
+      background: rgba(248, 113, 113, 0.25);
+      transform: scale(1.01);
+    }
+    
+    /* Version Footer */
+    .version-footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .modal-overlay.open {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: var(--bg-color);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 28px;
+      width: 100%;
+      max-width: 380px;
+      animation: modalSlide 0.25s ease;
+    }
+    
+    @keyframes modalSlide {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .modal-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    
+    .modal-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    .modal-input:focus {
+      border-color: var(--accent-green);
+    }
+    
+    .modal-input::placeholder {
+      color: var(--input-placeholder);
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .modal-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      border: none;
+    }
+    
+    .modal-btn.secondary {
+      background: var(--glass-surface);
+      color: var(--text-primary);
+    }
+    
+    .modal-btn.primary {
+      background: var(--accent-green);
+      color: #000;
+    }
+    
+    .modal-btn.danger {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    
+    .modal-btn:hover {
+      transform: scale(1.02);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-color);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      color: var(--text-primary);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-page">
+    <!-- Header -->
+    <div class="settings-header">
+      <a href="/" class="back-btn">
+        <i class="ph ph-arrow-left"></i>
+      </a>
+      <span class="header-title">Settings</span>
+      <div class="header-spacer"></div>
+    </div>
+    
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="profile-top">
+        <div class="profile-avatar" onclick="openModal('profile-modal')">
+          👤
+        </div>
+        <div class="profile-info">
+          <div class="profile-name" id="display-name"><%= user && user.name ? user.name : 'User' %></div>
+          <div class="profile-email" id="display-email"><%= user && user.email ? user.email : 'user@example.com' %></div>
+          <button class="edit-profile-btn" onclick="openModal('profile-modal')">
+            <i class="ph ph-pencil"></i> Edit Profile
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Appearance -->
+    <div class="section-title">Appearance</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="handleThemeToggle()">
+        <div class="item-icon purple"><i class="ph" id="theme-icon"></i></div>
+        <div class="item-content">
+          <div class="item-label">Theme</div>
+          <div class="item-sublabel" id="theme-label">Dark Mode</div>
+        </div>
+        <label class="toggle-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" id="theme-toggle" onchange="handleThemeToggle()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Notifications -->
+    <div class="section-title">Notifications</div>
+    <div class="settings-group">
+      <div class="settings-item">
+        <div class="item-icon blue"><i class="ph ph-bell"></i></div>
+        <div class="item-content">
+          <div class="item-label">Push Notifications</div>
+          <div class="item-sublabel">Event reminders & updates</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" checked id="notif-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="settings-item">
+        <div class="item-icon green"><i class="ph ph-phone"></i></div>
+        <div class="item-content">
+          <div class="item-label">Call Reminders</div>
+          <div class="item-sublabel">Get called before events</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="call-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Voice & Input -->
+    <div class="section-title">Voice & Input</div>
+    <div class="settings-group">
+      <div class="settings-item">
+        <div class="item-icon cyan"><i class="ph ph-microphone"></i></div>
+        <div class="item-content">
+          <div class="item-label">Voice Input</div>
+          <div class="item-sublabel">Enable speech recognition</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" checked id="voice-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Data & Storage -->
+    <div class="section-title">Data & Storage</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="openModal('clear-chat-modal')">
+        <div class="item-icon red"><i class="ph ph-trash"></i></div>
+        <div class="item-content">
+          <div class="item-label">Clear Chat History</div>
+          <div class="item-sublabel">Remove messages (keeps events)</div>
+        </div>
+        <i class="ph ph-caret-right item-arrow"></i>
+      </div>
+      <div class="settings-item" onclick="exportData()">
+        <div class="item-icon pink"><i class="ph ph-download"></i></div>
+        <div class="item-content">
+          <div class="item-label">Export Data</div>
+          <div class="item-sublabel">Download events & tasks</div>
+        </div>
+        <i class="ph ph-caret-right item-arrow"></i>
+      </div>
+    </div>
+    
+    <!-- Quick Links -->
+    <div class="section-title">Quick Links</div>
+    <div class="settings-group">
+      <a href="/calendar" class="settings-item">
+        <div class="item-icon blue"><i class="ph ph-calendar"></i></div>
+        <div class="item-content">
+          <div class="item-label">Calendar</div>
+          <div class="item-sublabel">View your schedule</div>
+        </div>
+        <i class="ph ph-caret-right item-arrow"></i>
+      </a>
+      <a href="/todos" class="settings-item">
+        <div class="item-icon green"><i class="ph ph-check-square"></i></div>
+        <div class="item-content">
+          <div class="item-label">TODO List</div>
+          <div class="item-sublabel">Manage your tasks</div>
+        </div>
+        <i class="ph ph-caret-right item-arrow"></i>
+      </a>
+    </div>
+    
+    <!-- About -->
+    <div class="section-title">About</div>
+    <div class="settings-group">
+      <div class="settings-item">
+        <div class="item-icon purple"><i class="ph ph-info"></i></div>
+        <div class="item-content">
+          <div class="item-label">About SWUNG</div>
+          <div class="item-sublabel">Version 2.0.0</div>
+        </div>
+        <i class="ph ph-caret-right item-arrow"></i>
+      </div>
+    </div>
+    
+    <!-- Logout -->
+    <button class="danger-btn" onclick="window.location='/logout'">
+      <i class="ph ph-sign-out"></i>
+      Log Out
+    </button>
+    
+    <div class="version-footer">
+      SWUNG v2.0.0 • Made with ❤️
+    </div>
+  </div>
+  
+  <!-- Profile Edit Modal -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-title">Edit Profile</div>
+      <div class="modal-desc">Update your personal information</div>
+      <input type="text" class="modal-input" id="input-name" placeholder="Your name">
+      <input type="email" class="modal-input" id="input-email" placeholder="Email address">
+      <input type="tel" class="modal-input" id="input-phone" placeholder="Phone number (optional)">
+      <div class="modal-actions">
+        <button class="modal-btn secondary" onclick="closeModal('profile-modal')">Cancel</button>
+        <button class="modal-btn primary" onclick="saveProfile()">Save</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Clear Chat Modal -->
+  <div class="modal-overlay" id="clear-chat-modal">
+    <div class="modal-content">
+      <div class="modal-title">Clear Chat History?</div>
+      <div class="modal-desc">This will delete all your chat messages. Your events, tasks, and alarms will NOT be deleted.</div>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" onclick="closeModal('clear-chat-modal')">Cancel</button>
+        <button class="modal-btn danger" onclick="clearChatHistory()">Clear Chat</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+  
+  <script>
+    // Toast notification
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+    
+    // Theme Management
+    function initThemeUI() {
+      const currentTheme = window.SwungTheme ? window.SwungTheme.get() : 'dark';
+      const isLight = currentTheme === 'light';
+      
+      document.getElementById('theme-toggle').checked = isLight;
+      document.getElementById('theme-icon').className = isLight ? 'ph ph-sun' : 'ph ph-moon';
+      document.getElementById('theme-label').textContent = isLight ? 'Light Mode' : 'Dark Mode';
+    }
+    
+    function handleThemeToggle() {
+      if (window.SwungTheme) {
+        const newTheme = window.SwungTheme.toggle();
+        const isLight = newTheme === 'light';
+        
+        document.getElementById('theme-toggle').checked = isLight;
+        document.getElementById('theme-icon').className = isLight ? 'ph ph-sun' : 'ph ph-moon';
+        document.getElementById('theme-label').textContent = isLight ? 'Light Mode' : 'Dark Mode';
+        
+        showToast(`Theme changed to ${isLight ? 'Light' : 'Dark'} mode`);
+      }
+    }
+    
+    // Modal Management
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      if (id === 'profile-modal') {
+        document.getElementById('input-name').value = localStorage.getItem('swung-user-name') || '';
+        document.getElementById('input-email').value = localStorage.getItem('swung-user-email') || '';
+        document.getElementById('input-phone').value = localStorage.getItem('swung-user-phone') || '';
+      }
+    }
+    
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+    
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove('open');
+        }
+      });
+    });
+    
+    // Profile Management
+    function saveProfile() {
+      const name = document.getElementById('input-name').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+      const phone = document.getElementById('input-phone').value.trim();
+      
+      if (name) {
+        localStorage.setItem('swung-user-name', name);
+        document.getElementById('display-name').textContent = name;
+      }
+      if (email) {
+        localStorage.setItem('swung-user-email', email);
+        document.getElementById('display-email').textContent = email;
+      }
+      if (phone) {
+        localStorage.setItem('swung-user-phone', phone);
+      }
+      
+      closeModal('profile-modal');
+      showToast('Profile updated!');
+    }
+    
+    // Load saved profile
+    function loadProfile() {
+      const name = localStorage.getItem('swung-user-name');
+      const email = localStorage.getItem('swung-user-email');
+      if (name) document.getElementById('display-name').textContent = name;
+      if (email) document.getElementById('display-email').textContent = email;
+    }
+    
+    // Clear Chat History
+    async function clearChatHistory() {
+      try {
+        const response = await fetch('/api/clear-chat', { method: 'POST' });
+        const result = await response.json();
+        
+        // Also clear from localStorage
+        localStorage.removeItem('swung-chat-history');
+        
+        closeModal('clear-chat-modal');
+        showToast('Chat history cleared!');
+      } catch (err) {
+        console.error('Failed to clear chat:', err);
+        closeModal('clear-chat-modal');
+        showToast('Chat cleared');
+      }
+    }
+    
+    // Export Data
+    function exportData() {
+      window.location.href = '/api/export-data';
+      showToast('Downloading export...');
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeUI();
+      loadProfile();
+    });
+  </script>
+</body>
+</html>

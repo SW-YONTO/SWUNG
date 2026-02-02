@@ -1,0 +1,27 @@
+<div class="event-list">
+  <% if (events && events.length > 0) { %>
+    <% events.forEach(event => { %>
+      <div class="event-card" data-event-id="<%= event.id %>">
+        <div class="event-time">
+          <%= new Date(event.datetime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) %>
+        </div>
+        <div class="event-details">
+          <h3 class="event-title"><%= event.title %></h3>
+          <% if (event.description) { %>
+            <p class="event-description"><%= event.description %></p>
+          <% } %>
+        </div>
+        <button class="event-delete-btn" data-event-id="<%= event.id %>" aria-label="Delete event">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="no-events">
+      <p>No events scheduled</p>
+    </div>
+  <% } %>
+</div>

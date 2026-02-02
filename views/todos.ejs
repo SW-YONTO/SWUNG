@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/variables.css">
+  <script src="/js/theme.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    .todo-page {
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 100px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .todo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 24px;
+    }
+    
+    .back-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .back-btn:hover { background: var(--glass-highlight); }
+    
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+    }
+    
+    .header-title i { color: var(--accent-green); }
+    .header-spacer { width: 44px; }
+    
+    .stats-bar { display: flex; gap: 12px; margin-bottom: 24px; }
+    
+    .stat-chip {
+      flex: 1;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    
+    .stat-chip .stat-number { font-size: 28px; font-weight: 700; display: block; }
+    .stat-chip .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .stat-chip.active .stat-number { color: var(--accent-purple); }
+    .stat-chip.completed .stat-number { color: var(--accent-green); }
+    
+    .add-task-container { display: flex; gap: 12px; margin-bottom: 28px; }
+    
+    .add-task-input {
+      flex: 1;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .add-task-input:focus { border-color: var(--accent-green); background: var(--glass-surface); }
+    .add-task-input::placeholder { color: var(--input-placeholder); }
+    
+    .add-task-btn {
+      width: 54px;
+      height: 54px;
+      background: var(--btn-primary-bg);
+      border: 1px solid var(--btn-primary-border);
+      border-radius: 16px;
+      color: var(--btn-primary-text);
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    
+    .add-task-btn:hover { background: var(--glass-highlight); transform: scale(1.02); }
+    .add-task-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 1s linear infinite; }
+    
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; }
+    .section-count { background: var(--glass-bg); padding: 4px 10px; border-radius: 10px; font-size: 11px; color: var(--text-muted); }
+    
+    .task-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+    
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      transition: all 0.2s ease;
+    }
+    
+    .task-item:hover { background: var(--card-hover); transform: translateX(4px); }
+    .task-item.loading { opacity: 0.4; pointer-events: none; }
+    
+    .task-checkbox {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--glass-border);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .task-checkbox:hover { border-color: var(--accent-green); background: rgba(74, 222, 128, 0.1); }
+    .task-checkbox i { font-size: 12px; color: transparent; transition: all 0.15s; }
+    .task-checkbox.checked { background: var(--accent-green); border-color: var(--accent-green); }
+    .task-checkbox.checked i { color: #0a0a0f; }
+    
+    .task-content { flex: 1; min-width: 0; }
+    .task-text { font-size: 15px; font-weight: 500; color: var(--text-primary); word-break: break-word; }
+    .task-item.completed .task-text { text-decoration: line-through; color: var(--text-muted); }
+    .task-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    
+    .priority-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+    .priority-urgent { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+    .priority-high { background: rgba(251, 146, 60, 0.15); color: var(--accent-orange); }
+    .priority-medium { background: rgba(250, 204, 21, 0.15); color: var(--accent-yellow); }
+    .priority-low { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+    
+    .task-delete {
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+      opacity: 0;
+    }
+    
+    .task-item:hover .task-delete { opacity: 1; }
+    .task-delete:hover { background: var(--btn-danger-bg); color: var(--accent-red); }
+    
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.6; }
+    .empty-state p { font-size: 14px; line-height: 1.5; }
+    
+    .completed-section { margin-top: 24px; }
+    .completed-section .task-item { background: rgba(255, 255, 255, 0.02); }
+    
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-color);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      color: var(--text-primary);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="todo-page">
+    <div class="todo-header">
+      <a href="/" class="back-btn"><i class="ph ph-arrow-left"></i></a>
+      <span class="header-title"><i class="ph ph-check-square"></i> TODO</span>
+      <div class="header-spacer"></div>
+    </div>
+    
+    <% 
+      // Use 'completed' column from database (not is_completed)
+      const activeTasks = tasks.filter(t => !t.completed);
+      const completedTasks = tasks.filter(t => t.completed);
+    %>
+    
+    <div class="stats-bar">
+      <div class="stat-chip active">
+        <span class="stat-number" id="active-count"><%= activeTasks.length %></span>
+        <span class="stat-label">Active</span>
+      </div>
+      <div class="stat-chip completed">
+        <span class="stat-number" id="completed-count"><%= completedTasks.length %></span>
+        <span class="stat-label">Done</span>
+      </div>
+    </div>
+    
+    <div class="add-task-container">
+      <input type="text" class="add-task-input" id="new-task-input" placeholder="What needs to be done?">
+      <button class="add-task-btn" id="add-task-btn"><i class="ph ph-plus"></i></button>
+    </div>
+    
+    <div class="section-header">
+      <span class="section-title">Active</span>
+      <span class="section-count" id="active-label"><%= activeTasks.length %> tasks</span>
+    </div>
+    <div class="task-list" id="active-tasks">
+      <% if (activeTasks.length === 0) { %>
+        <div class="empty-state" id="empty-active">
+          <div class="empty-icon">✨</div>
+          <p>All caught up!<br>Add a new task above.</p>
+        </div>
+      <% } else { %>
+        <% activeTasks.forEach(task => { %>
+          <div class="task-item" data-task-id="<%= task.id %>">
+            <div class="task-checkbox" onclick="toggleTask(<%= task.id %>, this)">
+              <i class="ph ph-check"></i>
+            </div>
+            <div class="task-content">
+              <div class="task-text"><%= task.title %></div>
+              <% if (task.priority) { %>
+              <div class="task-meta">
+                <span class="priority-badge priority-<%= task.priority %>"><%= task.priority %></span>
+              </div>
+              <% } %>
+            </div>
+            <button class="task-delete" onclick="deleteTask(<%= task.id %>, this)">
+              <i class="ph ph-trash"></i>
+            </button>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+    
+    <% if (completedTasks.length > 0) { %>
+    <div class="completed-section">
+      <div class="section-header">
+        <span class="section-title">Completed</span>
+        <span class="section-count"><%= completedTasks.length %> done</span>
+      </div>
+      <div class="task-list" id="completed-tasks">
+        <% completedTasks.forEach(task => { %>
+          <div class="task-item completed" data-task-id="<%= task.id %>">
+            <div class="task-checkbox checked" onclick="toggleTask(<%= task.id %>, this)">
+              <i class="ph ph-check"></i>
+            </div>
+            <div class="task-content">
+              <div class="task-text"><%= task.title %></div>
+            </div>
+            <button class="task-delete" onclick="deleteTask(<%= task.id %>, this)">
+              <i class="ph ph-trash"></i>
+            </button>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+    
+    // Add Task
+    document.getElementById('add-task-btn').onclick = async function() {
+      const input = document.getElementById('new-task-input');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      this.disabled = true;
+      this.innerHTML = '<i class="ph ph-spinner spinner"></i>';
+      
+      try {
+        const res = await fetch('/api/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: 'Add todo: ' + text })
+        });
+        const result = await res.json();
+        if (result.success) {
+          input.value = '';
+          showToast('Task added!');
+          setTimeout(() => location.reload(), 500);
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (err) {
+        console.error('Add task error:', err);
+        showToast('Failed to add task');
+        this.disabled = false;
+        this.innerHTML = '<i class="ph ph-plus"></i>';
+      }
+    };
+    
+    document.getElementById('new-task-input').onkeypress = function(e) {
+      if (e.key === 'Enter') document.getElementById('add-task-btn').click();
+    };
+    
+    // Toggle Task Complete
+    async function toggleTask(taskId, checkboxEl) {
+      const taskItem = checkboxEl.closest('.task-item');
+      if (taskItem.classList.contains('loading')) return;
+      
+      taskItem.classList.add('loading');
+      console.log('Toggling task:', taskId);
+      
+      try {
+        const res = await fetch('/api/tasks/' + taskId + '/complete', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await res.json();
+        console.log('Toggle result:', result);
+        
+        if (result.success) {
+          showToast(result.message || 'Task updated!');
+          setTimeout(() => location.reload(), 300);
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (err) {
+        console.error('Toggle task error:', err);
+        taskItem.classList.remove('loading');
+        showToast('Failed to update task');
+      }
+    }
+    
+    // Delete Task
+    async function deleteTask(taskId, btnEl) {
+      const taskItem = btnEl.closest('.task-item');
+      if (taskItem.classList.contains('loading')) return;
+      
+      if (!confirm('Delete this task?')) return;
+      
+      taskItem.classList.add('loading');
+      console.log('Deleting task:', taskId);
+      
+      try {
+        const res = await fetch('/api/tasks/' + taskId, { method: 'DELETE' });
+        const result = await res.json();
+        console.log('Delete result:', result);
+        
+        if (result.success) {
+          showToast('Task deleted');
+          taskItem.style.opacity = '0';
+          taskItem.style.transform = 'translateX(-20px)';
+          setTimeout(() => location.reload(), 300);
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (err) {
+        console.error('Delete task error:', err);
+        taskItem.classList.remove('loading');
+        showToast('Failed to delete task');
+      }
+    }
+  </script>
+</body>
+</html>

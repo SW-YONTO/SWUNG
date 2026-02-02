@@ -1,0 +1,288 @@
+<%# Event Edit Modal Partial - SWUNG %>
+<%# This modal is dynamically created by JS, this partial provides the container %>
+<div id="event-modal-container"></div>
+
+<style>
+/* Event Modal Styles */
+.event-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 20000;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.event-modal-content {
+  background: #1a1a1a;
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modal-emoji {
+  font-size: 32px;
+}
+
+.modal-datetime {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.modal-day {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.time-edit-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-time-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #fff;
+  width: 100px;
+  cursor: pointer;
+}
+
+.modal-time-input:focus {
+  outline: none;
+  border-color: #ff4757;
+}
+
+.modal-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-option .option-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+.modal-option .option-label {
+  flex: 1;
+  font-size: 14px;
+  color: #e5e7eb;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .toggle-slider {
+  background: #ff4757;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.reminder-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.reminder-select:focus {
+  outline: none;
+  border-color: #ff4757;
+}
+
+.modal-desc {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 0;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.modal-desc .desc-icon {
+  color: #6b7280;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.modal-actions .action-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.modal-actions .action-btn:hover {
+  transform: scale(1.05);
+}
+
+.modal-actions .action-btn:active {
+  transform: scale(0.95);
+}
+
+.modal-actions .edit-btn {
+  background: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+}
+
+.modal-actions .delete-btn {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.modal-actions .close-modal-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+}
+
+.modal-quick-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.quick-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #e5e7eb;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.quick-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.modal-edit-input {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.event-edit-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.event-edit-input::placeholder {
+  color: #6b7280;
+}
+
+.voice-edit-btn {
+  width: 36px;
+  height: 36px;
+  background: #ff4757;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+</style>

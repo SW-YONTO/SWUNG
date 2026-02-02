@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+  <title>Calendar - SWUNG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Modular CSS -->
+  <link rel="stylesheet" href="/css/variables.css">
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/event-card.css">
+  <link rel="stylesheet" href="/css/event-modal.css">
+  <link rel="stylesheet" href="/css/calendar.css">
+</head>
+<body class="calendar-body">
+
+  <!-- Header -->
+  <header class="calendar-top-bar">
+    <div class="calendar-month-title" id="calendar-title-trigger">
+      <span id="current-month-display">January</span>
+      <i class="ph ph-caret-down"></i>
+    </div>
+    
+    <div class="header-actions">
+       <div class="cal-date-badge" id="today-date-badge">
+         <%= new Date().getDate() %>
+       </div>
+    </div>
+  </header>
+
+  <!-- Views Container -->
+  <main class="calendar-main">
+    <%- include('partials/list-calendar') %>
+    <%- include('partials/grid-calendar') %>
+  </main>
+
+  <!-- Bottom Controls -->
+  <%- include('partials/calendar-controls') %>
+
+  <script>
+    window.calendarEvents = <%- JSON.stringify(events || []) %>;
+  </script>
+  <script src="/js/event-modal.js"></script>
+  <script src="/js/calendar.js"></script>
+</body>
+</html>

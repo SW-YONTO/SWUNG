@@ -247,6 +247,36 @@ router.get('/status', (req, res) => {
 });
 
 /**
+ * GET /api/debug/firebase
+ * Check if Firebase is initialized correctly
+ */
+router.get('/debug/firebase', async (req, res) => {
+  try {
+    const hasEnvVar = !!process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    
+    // Try to import and check Firebase status
+    let firebaseStatus = 'unknown';
+    try {
+      const admin = await import('firebase-admin');
+      const apps = admin.default.apps;
+      firebaseStatus = apps && apps.length > 0 ? 'initialized' : 'not_initialized';
+    } catch (e) {
+      firebaseStatus = 'error: ' + e.message;
+    }
+    
+    res.json({
+      success: true,
+      hasEnvVar: hasEnvVar,
+      envVarLength: hasEnvVar ? process.env.FIREBASE_SERVICE_ACCOUNT_BASE64.length : 0,
+      firebaseStatus: firebaseStatus,
+      message: hasEnvVar ? '✅ FIREBASE_SERVICE_ACCOUNT_BASE64 is set' : '❌ FIREBASE_SERVICE_ACCOUNT_BASE64 is NOT set'
+    });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
+/**
  * POST /api/clear-chat
  * Clear chat history for current user
  */

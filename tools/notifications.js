@@ -9,22 +9,52 @@ const require = createRequire(import.meta.url);
 // Initialize Firebase Admin
 let isInitialized = false;
 
-try {
-  // Try to load serviceAccountKey.json
-  const serviceAccount = require('../serviceAccountKey.json');
+/**
+ * Get Firebase service account credentials
+ * Priority: 1) Environment variable (base64) 2) JSON file
+ */
+function getServiceAccount() {
+  // Option 1: Read from environment variable (for production/Render)
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+    try {
+      const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
+      const serviceAccount = JSON.parse(decoded);
+      console.log('✅ Firebase credentials loaded from environment variable');
+      return serviceAccount;
+    } catch (err) {
+      console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT_BASE64:', err.message);
+    }
+  }
   
-  // Check if it's still the placeholder
-  if (serviceAccount.private_key_id === "PASTE_YOUR_PRIVATE_KEY_ID_HERE") {
-    console.log('⚠️ Firebase Service Account is still a placeholder. Update serviceAccountKey.json');
-  } else {
+  // Option 2: Read from file (for local development)
+  try {
+    const serviceAccount = require('../serviceAccountKey.json');
+    if (serviceAccount.private_key_id === "PASTE_YOUR_PRIVATE_KEY_ID_HERE") {
+      console.log('⚠️ Firebase Service Account is still a placeholder');
+      return null;
+    }
+    console.log('✅ Firebase credentials loaded from serviceAccountKey.json');
+    return serviceAccount;
+  } catch (err) {
+    console.log('⚠️ serviceAccountKey.json not found');
+    return null;
+  }
+}
+
+try {
+  const serviceAccount = getServiceAccount();
+  
+  if (serviceAccount) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
     isInitialized = true;
     console.log('✅ Firebase Admin initialized successfully');
+  } else {
+    console.log('⚠️ Firebase Admin not initialized - push notifications will not work');
   }
 } catch (error) {
-  console.log('⚠️ Failed to load Firebase Admin credentials:', error.message);
+  console.log('⚠️ Failed to initialize Firebase Admin:', error.message);
 }
 
 /**

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SWUNG</string>
+    <string name="title_activity_main">SWUNG</string>
+    <string name="package_name">com.swung.app</string>
+    <string name="custom_url_scheme">com.swung.app</string>
+</resources>

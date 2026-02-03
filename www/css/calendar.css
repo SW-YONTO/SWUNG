@@ -1,0 +1,973 @@
+/* calendar.css - SWUNG Calendar Styles
+   Uses shared variables from variables.css */
+
+body.calendar-body {
+  background: var(--bg-gradient);
+  overflow: hidden;
+  padding-bottom: 80px;
+}
+
+/* ==========================================
+   Header - Theme Aware
+   ========================================== */
+.calendar-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--glass-surface);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.calendar-month-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.calendar-month-title:hover {
+  opacity: 0.8;
+}
+
+.calendar-month-title i {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+/* Today Date Badge */
+.cal-date-badge {
+  background: var(--accent-red);
+  border-radius: 8px;
+  padding: 4px 10px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.cal-date-badge:hover {
+  transform: scale(1.05);
+}
+
+.cal-date-badge:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================
+   Month Picker Dropdown
+   ========================================== */
+.month-picker {
+  position: absolute;
+  top: 70px;
+  left: 24px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px;
+  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s, transform 0.2s;
+  min-width: 200px;
+}
+
+.month-picker.open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.month-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.year-display {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.year-nav-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.year-nav-btn:hover {
+  background: var(--glass-surface);
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.month-btn {
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.month-btn:hover {
+  background: var(--glass-surface);
+}
+
+.month-btn.active {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+/* ==========================================
+   Event Modal (for calendar page)
+   ========================================== */
+.event-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  animation: fadeIn 0.2s ease;
+  padding: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.event-modal-content {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: scaleIn 0.25s ease;
+  box-shadow: var(--shadow-lg);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.event-modal-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  padding-right: 12px;
+}
+
+.modal-emoji {
+  font-size: 28px;
+}
+
+.modal-datetime {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.modal-day {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.modal-time {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.modal-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.modal-option .option-icon {
+  font-size: 18px;
+  color: var(--text-secondary);
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-option .option-label {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 22px;
+  transition: 0.3s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .toggle-slider {
+  background: #4ade80;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+}
+
+.reminder-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.reminder-select:focus {
+  outline: none;
+  border-color: #4ade80;
+}
+
+.modal-desc {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  color: #9ca3af;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modal-desc .desc-icon {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  padding: 12px 0 8px;
+  gap: 8px;
+}
+
+.modal-actions .action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.modal-actions .action-btn:hover {
+  transform: scale(1.05);
+}
+
+.modal-actions .action-btn:active {
+  transform: scale(0.95);
+}
+
+.modal-actions .delete-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.modal-actions .edit-btn {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+.modal-actions .close-modal-btn {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+}
+
+.modal-quick-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 4px;
+}
+
+.quick-btn {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: #e5e7eb;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.quick-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.modal-edit-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 6px 8px 6px 16px;
+  margin-top: 8px;
+}
+
+.event-edit-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+}
+
+.event-edit-input::placeholder {
+  color: #9ca3af;
+}
+
+.voice-edit-btn {
+  width: 36px;
+  height: 36px;
+  background: #ff4757;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.voice-edit-btn:active {
+  transform: scale(0.95);
+}
+
+.voice-edit-btn.recording {
+  background: #ef4444;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.voice-edit-btn.hidden {
+  display: none;
+}
+
+/* Send Button in Modal */
+.send-edit-btn {
+  width: 36px;
+  height: 36px;
+  background: #4ade80;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.send-edit-btn:active {
+  transform: scale(0.95);
+}
+
+.send-edit-btn.hidden {
+  display: none;
+}
+
+/* Clickable Time */
+.modal-time {
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.modal-time:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-time-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.modal-time-input:focus {
+  border-color: #4ade80;
+}
+
+/* Delete Confirmation Dialog */
+.delete-confirm-dialog {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.delete-confirm-dialog.hidden {
+  display: none;
+}
+
+.confirm-content {
+  background: #2a2a2a;
+  padding: 28px 32px;
+  border-radius: 16px;
+  text-align: center;
+  min-width: 280px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.confirm-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 28px;
+  color: #ef4444;
+}
+
+.confirm-content h3 {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.confirm-content p {
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirm-cancel {
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 10px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.confirm-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.confirm-delete {
+  padding: 10px 24px;
+  background: #ef4444;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.confirm-delete:hover {
+  background: #dc2626;
+}
+
+.confirm-delete:active {
+  transform: scale(0.97);
+}
+
+/* Save Button */
+.modal-actions .save-btn {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.modal-actions .save-btn:hover {
+  background: rgba(74, 222, 128, 0.25);
+}
+
+/* ==========================================
+   View Container
+   ========================================== */
+.view-container {
+  height: calc(100dvh - 80px);
+  overflow-y: auto;
+  padding: 0 20px 120px 20px;
+  scroll-behavior: smooth;
+}
+
+.view-container.hidden {
+  display: none;
+}
+
+/* ==========================================
+   List View Styles
+   ========================================== */
+.day-group {
+  margin-bottom: 8px;
+}
+
+.day-header {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.day-header .day-date {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.day-header .day-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Today's date - red highlight */
+.day-header.today {
+  color: var(--accent-red);
+}
+
+.day-header.today .day-date,
+.day-header.today .day-name {
+  color: var(--accent-red);
+}
+
+/* Events with day = bold, days without = muted */
+.day-header.has-events {
+  color: var(--text-primary);
+}
+
+/* Event Card */
+.cal-event-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 220px;
+  box-shadow: var(--shadow-sm);
+}
+
+.cal-event-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.cal-event-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cal-event-time {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cal-event-time .time-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Calendar Sheet Icon (mini calendar) */
+.cal-sheet-icon {
+  background: #fff;
+  border-radius: 6px;
+  width: 34px;
+  height: 38px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.cal-sheet-header {
+  background: var(--accent-red);
+  height: 12px;
+  width: 100%;
+  font-size: 7px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.cal-sheet-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-weight: 700;
+  font-size: 14px;
+  background: #fff;
+}
+
+/* Event Emoji Icon */
+.cal-event-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+/* ==========================================
+   Grid View Styles
+   ========================================== */
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: 0 4px 8px;
+}
+
+.weekday-label {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.calendar-grid-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day-cell {
+  background: var(--glass-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 2px;
+  min-height: 80px;
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+}
+
+.calendar-day-cell span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.calendar-day-cell.other-month span {
+  color: var(--text-muted);
+}
+
+.calendar-day-cell.today span {
+  background: var(--accent-red);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* Event Pills in Grid */
+.event-pill-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 0 2px;
+  margin-top: 2px;
+}
+
+.event-pill {
+  font-size: 9px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  text-align: left;
+  width: 100%;
+}
+
+.event-pill.blue {
+  background: rgba(96, 165, 250, 0.3);
+  color: #93c5fd;
+}
+.event-pill.orange {
+  background: rgba(251, 146, 60, 0.3);
+  color: #fdba74;
+}
+.event-pill.green {
+  background: rgba(74, 222, 128, 0.3);
+  color: #86efac;
+}
+.event-pill.gray {
+  background: rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+}
+
+/* ==========================================
+   Bottom Controls
+   ========================================== */
+.bottom-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.bottom-controls > * {
+  pointer-events: auto;
+}
+
+/* View Toggle Pill */
+.view-toggle-pill {
+  display: flex;
+  align-items: center;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 6px;
+  gap: 4px;
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Animated sliding background */
+.toggle-bg {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  background: var(--accent-color);
+  border-radius: 12px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  left: 6px;
+  top: 6px;
+}
+
+/* Move background to right (second button) when grid view is active */
+.view-toggle-pill.grid-active .toggle-bg {
+  transform: translateX(46px);
+}
+
+/* Toggle Buttons */
+.toggle-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s;
+}
+
+.toggle-btn i {
+  font-size: 22px;
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.toggle-btn.active i {
+  color: var(--accent-text);
+}
+
+/* Chat FAB */
+.chat-fab {
+  width: 54px;
+  height: 54px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-fab:hover {
+  transform: scale(1.05);
+  background: var(--card-hover);
+}
+
+.chat-fab:active {
+  transform: scale(0.95);
+}
+
+.chat-fab i {
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+/* ==========================================
+   Utilities
+   ========================================== */
+.hidden {
+  display: none !important;
+}
+
+.spacer {
+  height: 80px;
+}

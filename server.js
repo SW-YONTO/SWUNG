@@ -40,6 +40,25 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 // ===========================================
 
+// CORS for mobile app
+app.use((req, res, next) => {
+  // Allow Capacitor app (null origin) and localhost for development
+  const origin = req.headers.origin;
+  const allowedOrigins = ['http://localhost:3000', 'https://swung.onrender.com', 'capacitor://localhost', 'http://localhost'];
+  
+  if (!origin || allowedOrigins.includes(origin) || origin === 'null') {
+    res.header('Access-Control-Allow-Origin', origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  }
+  
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Session configuration
 app.use(session({
   store: new FileStore({

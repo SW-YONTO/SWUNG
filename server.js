@@ -37,6 +37,9 @@ const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 
 // ===========================================
+// Trust proxy (required for Render/Heroku to see https)
+app.set('trust proxy', 1);
+
 // Middleware
 // ===========================================
 
@@ -70,39 +73,20 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { 
-    secure: false,
+    secure: true, // Required for SameSite: None
+    sameSite: 'none', // Required for cross-site (Android -> Render)
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
   }
 }));
 
 
-
-// Auto-login middleware - restores session from saved tokens
+// Removed aggressive auto-login middleware to fix logout issue
 import { hasValidTokens, loadTokens } from './lib/oauth.js';
 
 app.use(async (req, res, next) => {
-  // If already logged in, continue
-  if (req.session.userId) {
-    return next();
-  }
-  
-  // Check for saved tokens and auto-login if valid
-  if (hasValidTokens()) {
-    const tokens = loadTokens();
-    if (tokens) {
-      // Create session for auto-login
-      req.session.userId = tokens.githubUserId || 1; // Default user ID
-      req.session.user = {
-        id: tokens.githubUserId || 1,
-        name: tokens.githubUsername || 'GitHub User',
-        github_id: tokens.githubUserId,
-        avatar: tokens.githubAvatar || null
-      };
-      req.session.authenticated = true;
-      console.log('✓ Auto-login from saved tokens');
-    }
-  }
-  
+  // We only check for tokens to ensure the background scheduler has access
+  // We DO NOT auto-login the user session, so they can properly logout.
+  // If they need to log in, they must go through the login flow.
   next();
 });
 

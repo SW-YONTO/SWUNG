@@ -159,8 +159,11 @@ router.post('/auth/github/refresh', async (req, res) => {
  * Destroy session
  */
 router.get('/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('/login');
+  req.session.destroy((err) => {
+    if (err) console.error('Error destroying session:', err);
+    res.clearCookie('connect.sid');
+    res.redirect('/login');
+  });
 });
 
 export default router;

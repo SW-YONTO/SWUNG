@@ -26,9 +26,21 @@ class SocketHandler {
       console.log('🔔 Reminder received:', data);
       this.showReminder(data);
     });
+    
+    // Handle alarm notifications (from server checkAlarms)
+    this.socket.on('alarm', (data) => {
+      console.log('🔔 Alarm received:', data);
+      this.showReminder({
+        id: data.id,
+        event_title: data.title,
+        message: data.message || data.title
+      });
+    });
   }
   
   showReminder(data) {
+    console.log('🔔🔔🔔 SHOWING REMINDER:', data);
+    
     // Play notification sound
     this.playNotificationSound();
     

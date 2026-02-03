@@ -38,7 +38,21 @@ export function createAlarm({ userId, eventId = null, title, triggerAt, message,
  */
 export function getPendingAlarms() {
   try {
-    const now = new Date().toISOString();
+    // Get current time in IST (India Standard Time, UTC+5:30)
+    const now = new Date();
+    
+    // Format current time as local datetime string (matches stored format)
+    // Stored format: "2026-02-03T14:36:46" (no timezone suffix, IST assumed)
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const localNow = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    
+    console.log(`🕐 Checking alarms: now=${localNow} (local time)`);
+    
     const alarms = db.prepare(`
       SELECT a.*, u.name as user_name, e.title as event_title
       FROM alarms a
@@ -46,7 +60,7 @@ export function getPendingAlarms() {
       LEFT JOIN events e ON a.event_id = e.id
       WHERE a.is_triggered = 0 AND a.is_active = 1 AND a.trigger_at <= ?
       ORDER BY a.trigger_at ASC
-    `).all(now);
+    `).all(localNow);
     
     return alarms;
   } catch (error) {

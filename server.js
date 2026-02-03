@@ -21,6 +21,8 @@ import './config/database.js';
 import authRoutes from './routes/auth.js';
 import apiRoutes from './routes/api.js';
 import pageRoutes from './routes/pages.js';
+import notificationRoutes from './routes/notifications.js';
+import { sendPushNotification } from './tools/notifications.js';
 
 // Import scheduler
 import { getPendingAlarms, markAlarmTriggered } from './tools/index.js';
@@ -131,6 +133,7 @@ app.use('/', authRoutes);
 
 // Protected API routes
 app.use('/api', requireAuth, apiRoutes);
+app.use('/api/notifications', requireAuth, notificationRoutes);
 
 // Protected Page routes
 app.use('/', requireAuth, pageRoutes);
@@ -147,15 +150,37 @@ io.on('connection', (socket) => {
   });
 });
 
+// Test notification endpoint - triggers an immediate Socket.IO notification
+app.get('/api/test-notification', (req, res) => {
+  console.log('🧪 TEST: Sending test notification via Socket.IO');
+  
+  io.emit('alarm', {
+    id: 9999,
+    title: 'Test Notification',
+    message: 'This is a test notification from SWUNG!'
+  });
+  
+  res.json({ 
+    success: true,
+    message: 'Test notification sent! Check your browser.',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // ===========================================
 // Alarm Scheduler
 // ===========================================
 
+
+
 function checkAlarms() {
   const pendingAlarms = getPendingAlarms();
+  const now = new Date();
+  
+  console.log(`⏰ Alarm check at ${now.toISOString()} - Found ${pendingAlarms.length} pending alarm(s)`);
   
   for (const alarm of pendingAlarms) {
-    console.log(`🔔 Alarm triggered: ${alarm.title}`);
+    console.log(`🔔 Alarm triggered: ${alarm.title} (trigger_at: ${alarm.trigger_at})`);
     
     // Emit to all connected clients
     io.emit('alarm', {
@@ -165,13 +190,19 @@ function checkAlarms() {
       callUser: alarm.call_user === 1
     });
     
+    // Send Push Notification
+    sendPushNotification(alarm.user_id, alarm.title, alarm.message || 'Time for your event!');
+
     // Mark as triggered
     markAlarmTriggered(alarm.id);
   }
 }
 
-// Check alarms every minute
-setInterval(checkAlarms, 60000);
+// Check alarms every 30 seconds (more responsive for near-future events)
+setInterval(checkAlarms, 30000);
+
+// Run immediate check on startup
+checkAlarms();
 
 // ===========================================
 // Error Handling

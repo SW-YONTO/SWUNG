@@ -198,5 +198,46 @@
   <script src="/js/socket.js"></script>
   <script src="/js/event-modal.js"></script>
   <script src="/js/chat.js"></script>
+  
+  <script type="module">
+    import { initNotifications, requestNotificationPermission } from '/js/notifications.js';
+    
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0qxU4DNfHsG3itjVCzutLmx0sJpWR4x0",
+      authDomain: "sw-ung.firebaseapp.com",
+      projectId: "sw-ung",
+      storageBucket: "sw-ung.firebasestorage.app",
+      messagingSenderId: "1096432312292",
+      appId: "1:1096432312292:web:707628be06fb351a8231f1",
+      measurementId: "G-CW0EXT43TZ"
+    };
+    
+    initNotifications(firebaseConfig);
+
+    // Bind settings button
+    document.addEventListener('DOMContentLoaded', () => {
+        // Wait a moment for dynamic content or just attempt to find the button
+        setTimeout(() => {
+             const settingsList = document.querySelector('.settings-list');
+             if (settingsList) {
+                 const notifBtn = Array.from(settingsList.querySelectorAll('.settings-item')).find(el => el.textContent.includes("Event Notification"));
+                 
+                 if (notifBtn) {
+                     notifBtn.addEventListener('click', async () => {
+                         const granted = await requestNotificationPermission();
+                         if (granted) {
+                             alert("Notifications Enabled! 🚀");
+                             const textSpan = notifBtn.querySelector('.item-text');
+                             if (textSpan) textSpan.innerText = "Notifications On ✅";
+                         } else {
+                             alert("Please allow notifications in your browser settings.");
+                         }
+                     });
+                 }
+             }
+        }, 1000); // Small delay to ensure modal/list is ready if needed
+    });
+  </script>
 </body>
 </html>

@@ -39,8 +39,7 @@ class ChatApp {
     this.setupEventListeners();
     this.setupVoiceRecognition();
     this.setupImageHandling();
-    this.scrollToBottom();
-    this.loadHistory();
+    this.loadHistory(); // This will scroll to bottom after loading
     this.checkUrlParams();
   }
 
@@ -89,8 +88,11 @@ class ChatApp {
           }
         });
         
-        // If history loaded, scroll to bottom
+        // If history loaded, scroll to bottom with multiple attempts to ensure it works
         this.scrollToBottom();
+        setTimeout(() => this.scrollToBottom(), 50);
+        setTimeout(() => this.scrollToBottom(), 200);
+        setTimeout(() => this.scrollToBottom(), 500);
       }
     } catch (err) {
       console.error('Failed to load history', err);
@@ -898,7 +900,19 @@ class ChatApp {
   }
   
   scrollToBottom() {
+    // Method 1: Direct scroll
     this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+    
+    // Method 2: Scroll after DOM update (more reliable)
+    requestAnimationFrame(() => {
+      this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+    });
+    
+    // Method 3: Scroll the last child into view as fallback
+    const lastChild = this.chatContainer.lastElementChild;
+    if (lastChild) {
+      lastChild.scrollIntoView({ behavior: 'instant', block: 'end' });
+    }
   }
   
   speak(text) {

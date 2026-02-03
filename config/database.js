@@ -141,6 +141,20 @@ async function initDatabase() {
   db.run(`CREATE INDEX IF NOT EXISTS idx_alarms_trigger_at ON alarms(trigger_at)`);
   db.run(`CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id)`);
   db.run(`CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id)`);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS fcm_tokens (
+      user_id INTEGER NOT NULL,
+      token TEXT NOT NULL,
+      platform TEXT DEFAULT 'web',
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, token),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+  
+  db.run(`CREATE INDEX IF NOT EXISTS idx_fcm_tokens_user_id ON fcm_tokens(user_id)`);
   
   saveDatabase();
   console.log('✅ Database initialized with all tables');

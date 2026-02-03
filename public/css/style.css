@@ -93,7 +93,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body {
+html,body {
   font-family: var(--font-main);
   background-color: var(--bg-color);
   color: #ffffff;
@@ -113,6 +113,7 @@ a { text-decoration: none; color: inherit; }
   flex-direction: column;
   height: 100%;
   position: relative;
+  background-color: var(--bg-color);
   background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #050505 60%);
 }
 

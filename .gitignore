@@ -6,3 +6,8 @@ classes/
 sessions/
 *.log
 .DS_Store
+
+# Firebase secrets - NEVER commit these
+serviceAccountKey.json
+sw-ung-firebase-adminsdk-*.json
+google-services.json

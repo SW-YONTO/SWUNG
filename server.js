@@ -44,7 +44,7 @@ const PORT = process.env.PORT || 3000;
 app.use((req, res, next) => {
   // Allow Capacitor app (null origin) and localhost for development
   const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://swung.onrender.com', 'capacitor://localhost', 'http://localhost'];
+  const allowedOrigins = ['http://localhost:3000', 'https://swung.onrender.com', 'capacitor://localhost', 'http://localhost', 'https://localhost'];
   
   if (!origin || allowedOrigins.includes(origin) || origin === 'null') {
     res.header('Access-Control-Allow-Origin', origin || '*');

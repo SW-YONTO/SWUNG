@@ -32,14 +32,17 @@ export function saveChatMessage(userId, role, content, actionData = null) {
 /**
  * Get chat history for a user
  */
-export function getChatHistory(userId, limit = 50) {
+export function getChatHistory(userId, limit = 50, offset = 0) {
   try {
+    // Fetch latest N messages (descending), then reorder them ascending for chat
     const messages = db.prepare(`
-      SELECT * FROM chats 
-      WHERE user_id = ?
-      ORDER BY created_at ASC
-      LIMIT ?
-    `).all(userId, limit);
+      SELECT * FROM (
+        SELECT * FROM chats 
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+      ) ORDER BY created_at ASC
+    `).all(userId, limit, offset);
     
     // Parse action_data JSON
     return messages.map(msg => ({

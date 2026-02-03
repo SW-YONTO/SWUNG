@@ -30,6 +30,12 @@ class ChatApp {
     this.recognition = null;
     this.tempTranscript = '';
     
+    // Pagination State
+    this.historyOffset = 0;
+    this.historyLimit = 20;
+    this.isLoadingHistory = false;
+    this.hasMoreHistory = true;
+    
     this.init();
   }
   
@@ -39,8 +45,11 @@ class ChatApp {
     this.setupEventListeners();
     this.setupVoiceRecognition();
     this.setupImageHandling();
-    this.loadHistory(); // This will scroll to bottom after loading
+    this.setupVoiceRecognition();
+    this.setupImageHandling();
+    this.loadHistory(); 
     this.checkUrlParams();
+    this.setupScrollListener();
   }
 
   checkUrlParams() {
@@ -72,32 +81,130 @@ class ChatApp {
     }
   }
 
-  async loadHistory() {
+  setupScrollListener() {
+    this.chatContainer.addEventListener('scroll', () => {
+      if (this.chatContainer.scrollTop === 0 && this.hasMoreHistory && !this.isLoadingHistory) {
+        this.loadHistory(true);
+      }
+    });
+  }
+
+  async loadHistory(isLoadMore = false) {
+    if (this.isLoadingHistory) return;
+    this.isLoadingHistory = true;
+    
+    // Show loading spinner if loading more
+    let loader = null;
+    if (isLoadMore) {
+        loader = document.createElement('div');
+        loader.className = 'history-loader';
+        loader.innerHTML = '<div class="spinner-small"></div>';
+        this.chatContainer.insertBefore(loader, this.chatContainer.firstChild);
+    }
+    
     try {
-      const res = await fetch('/api/history');
+      const res = await fetch(`${window.SWUNG_CONFIG.apiBaseUrl}/api/history?limit=${this.historyLimit}&offset=${this.historyOffset}`);
       const data = await res.json();
-      if (data.success && data.history) {
+      
+      if (loader) loader.remove();
+      
+      if (data.success && data.history && data.history.length > 0) {
+        const oldScrollHeight = this.chatContainer.scrollHeight;
+        const fragment = document.createDocumentFragment();
+        
         data.history.forEach(msg => {
-          // Map role to sender type (user or bot)
           const sender = msg.role === 'user' ? 'user' : 'bot';
-          this.appendMessage(sender, msg.content);
+          // 1. Create Message
+          const msgEl = this.createMessageElement(sender, msg.content, msg);
+          fragment.appendChild(msgEl);
           
-          // Render card if exists
+          // 2. Create Card (if exists)
           if (msg.action_data && msg.action_data.data) {
-            this.showEventCard(msg.action_data.data, msg.action_data.result);
+             const cardEl = this.createEventCardElement(msg.action_data.data, msg.action_data.result);
+             if (cardEl) fragment.appendChild(cardEl);
           }
         });
         
-        // If history loaded, scroll to bottom with multiple attempts to ensure it works
-        this.scrollToBottom();
-        setTimeout(() => this.scrollToBottom(), 50);
-        setTimeout(() => this.scrollToBottom(), 200);
-        setTimeout(() => this.scrollToBottom(), 500);
+        if (isLoadMore) {
+           this.chatContainer.insertBefore(fragment, this.chatContainer.firstChild);
+           const newScrollHeight = this.chatContainer.scrollHeight;
+           this.chatContainer.scrollTop = newScrollHeight - oldScrollHeight;
+        } else {
+           this.chatContainer.appendChild(fragment);
+           this.scrollToBottom();
+        }
+
+        this.historyOffset += data.history.length;
+        this.hasMoreHistory = data.hasMore;
+      } else {
+        this.hasMoreHistory = false;
       }
     } catch (err) {
       console.error('Failed to load history', err);
+      if (loader) loader.remove();
+    } finally {
+      this.isLoadingHistory = false;
     }
   }
+
+  createMessageElement(sender, text, msgData = {}) {
+      const msgId = msgData.id || Date.now();
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`; // Not sender-message, just sender (based on CSS usually)
+      messageDiv.id = `msg-${msgId}`;
+      if (sender === 'user') messageDiv.classList.add('user');
+      if (sender === 'bot') messageDiv.classList.add('bot');
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      
+      // Add images if provided
+      if (msgData.images && msgData.images.length > 0) {
+        const imageGrid = document.createElement('div');
+        imageGrid.className = 'message-image-grid';
+        msgData.images.forEach(imgSrc => {
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          img.className = 'message-image';
+          imageGrid.appendChild(img);
+        });
+        contentDiv.appendChild(imageGrid);
+      }
+      
+      // Add text if not empty
+      if (text) {
+          const p = document.createElement('p');
+          p.innerHTML = this.formatText(text);
+          if (msgData.images && msgData.images.length > 0) p.style.marginTop = '8px';
+          contentDiv.appendChild(p);
+      }
+      
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      const date = msgData.created_at ? new Date(msgData.created_at) : new Date();
+      timeDiv.textContent = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      messageDiv.appendChild(contentDiv);
+      messageDiv.appendChild(timeDiv);
+      
+      // Add status for user messages
+      if (sender === 'user' && msgData.status) {
+        const statusDiv = document.createElement('div');
+        statusDiv.className = `message-status ${msgData.status}`;
+        statusDiv.id = `msg-status-${msgId}`;
+        
+        if (msgData.status === 'sending') {
+          statusDiv.innerHTML = '<i class="ph ph-circle-notch"></i> Sending...';
+        } else if (msgData.status === 'uploading') {
+          statusDiv.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> Uploading...';
+        }
+        messageDiv.appendChild(statusDiv);
+      }
+      
+      return messageDiv;
+  }
+
   
   setupEventListeners() {
     // Send message on button click
@@ -416,9 +523,11 @@ class ChatApp {
     const imagesToDisplay = hasImages ? this.attachedImages.map(img => img.dataUrl) : [];
     
     // Append user message with status and images
-    const userMsgId = this.appendMessage('user', displayText, { 
+    const userMsgId = Date.now();
+    this.appendMessage('user', displayText, { 
       status: statusType,
-      images: imagesToDisplay
+      images: imagesToDisplay,
+      id: userMsgId
     });
     
     // Show typing indicator
@@ -430,7 +539,7 @@ class ChatApp {
         images: hasImages ? this.attachedImages.map(img => img.dataUrl) : []
       };
 
-      const response = await fetch('/api/process', {
+      const response = await fetch(`${window.SWUNG_CONFIG.apiBaseUrl}/api/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -520,8 +629,15 @@ class ChatApp {
     }
   }
   
-  showEventCard(action, result) {
-    if (!action || !action.type) return;
+    const cardEl = this.createEventCardElement(action, result);
+    if (cardEl) {
+        this.chatContainer.appendChild(cardEl);
+        this.scrollToBottom();
+    }
+  }
+
+  createEventCardElement(action, result) {
+    if (!action || !action.type) return null;
     
     const cardDiv = document.createElement('div');
     cardDiv.className = 'event-card';
@@ -533,7 +649,6 @@ class ChatApp {
       const timeStr = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       const emoji = this.getEventEmoji(action.title);
       const eventId = result?.event?.id || Date.now();
-
       
       cardDiv.innerHTML = `
         <div class="event-card-inline" data-event-id="${eventId}" data-event='${JSON.stringify(action)}'>
@@ -687,11 +802,10 @@ class ChatApp {
       `;
     } else {
       // Unknown action, don't render card
-      return;
+      return null;
     }
     
-    this.chatContainer.appendChild(cardDiv);
-    this.scrollToBottom();
+    return cardDiv;
   }
   
   getEventEmoji(title) {
@@ -833,65 +947,11 @@ class ChatApp {
     });
   }
   
-  appendMessage(sender, text, options = {}) {
-
-    const msgId = Date.now();
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${sender}`;
-    messageDiv.id = `msg-${msgId}`;
-    
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    
-    // Add images if provided
-    if (options.images && options.images.length > 0) {
-      const imageGrid = document.createElement('div');
-      imageGrid.className = 'message-image-grid';
-      options.images.forEach(imgSrc => {
-        const img = document.createElement('img');
-        img.src = imgSrc;
-        img.className = 'message-image';
-        imageGrid.appendChild(img);
-      });
-      contentDiv.appendChild(imageGrid);
-    }
-    
-    // Add text if not empty
-    if (text) {
-      if (options.images && options.images.length > 0) {
-        contentDiv.innerHTML += `<p style="margin-top: 8px;">${this.formatText(text)}</p>`;
-      } else {
-        contentDiv.innerHTML = `<p>${this.formatText(text)}</p>`;
-      }
-    }
-    
-    const timeDiv = document.createElement('div');
-    timeDiv.className = 'message-time';
-    timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    
-    messageDiv.appendChild(contentDiv);
-    messageDiv.appendChild(timeDiv);
-    
-    // Add status for user messages
-    if (sender === 'user' && options.status) {
-      const statusDiv = document.createElement('div');
-      statusDiv.className = `message-status ${options.status}`;
-      statusDiv.id = `msg-status-${msgId}`;
-      
-      if (options.status === 'sending') {
-        statusDiv.innerHTML = '<i class="ph ph-circle-notch"></i> Sending...';
-      } else if (options.status === 'uploading') {
-        statusDiv.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> Uploading...';
-      }
-      
-      messageDiv.appendChild(statusDiv);
-    }
-    
-    this.chatContainer.appendChild(messageDiv);
+    const msgEl = this.createMessageElement(sender, text, options);
+    this.chatContainer.appendChild(msgEl);
     this.scrollToBottom();
     
-    return msgId;
+    return options.id || msgEl.id.replace('msg-', '');
   }
   
   formatText(text) {

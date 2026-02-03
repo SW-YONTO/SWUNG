@@ -23,8 +23,10 @@ const router = express.Router();
  */
 router.get('/history', (req, res) => {
   try {
-    const history = getChatHistory(req.session.userId);
-    res.json({ success: true, history });
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = parseInt(req.query.offset) || 0;
+    const history = getChatHistory(req.session.userId, limit, offset);
+    res.json({ success: true, history, hasMore: history.length === limit });
   } catch (error) {
     console.error('History error:', error);
     res.status(500).json({ success: false, error: 'Failed to load history' });

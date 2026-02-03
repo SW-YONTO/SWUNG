@@ -6,6 +6,8 @@ classes/
 sessions/
 *.log
 .DS_Store
+/android/
+/www/
 
 # Firebase secrets - NEVER commit these
 serviceAccountKey.json

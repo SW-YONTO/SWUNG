@@ -210,7 +210,16 @@ function checkAlarms() {
     });
     
     // Send Push Notification
-    sendPushNotification(alarm.user_id, alarm.title, alarm.message || 'Time for your event!');
+    const triggerDate = new Date(alarm.trigger_at);
+    // Format: "2:00 PM"
+    const timeString = triggerDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    
+    // Construct rich notification body
+    // If it's an event alarm, use the event title. If manual alarm, use its title.
+    const notificationTitle = alarm.event_title ? `Upcoming Event: ${alarm.event_title}` : `Reminder: ${alarm.title}`;
+    const notificationBody = alarm.message || `Scheduled for ${timeString}`;
+
+    sendPushNotification(alarm.user_id, notificationTitle, notificationBody);
 
     // Mark as triggered
     markAlarmTriggered(alarm.id);
